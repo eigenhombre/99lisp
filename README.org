@@ -3,3 +3,5 @@ Ninety-nine Lisp problems (in progress), based on 99 Prolog problems.
 Reference list [[https://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html][here]].
 
 See my Common Lisp setup =Makefile= [[https://github.com/eigenhombre/mac-sbcl-quicklisp-install][here]].
+
+Note that I'm a CL newbie, so please don't expect idiomatic code (yet).
