@@ -146,3 +146,36 @@ T
 (encode '(a a a a b c c a a d e e e e))
 ;;=>
 '((4 A) (1 B) (2 C) (2 A) (1 D) (4 E))
+
+;; P11 (*) Modified run-length encoding.
+(defun encode-modified (l)
+  (labels ((f (ll)
+             (if (not ll)
+                 nil
+                 (let* ((cl (car ll))
+                        (ccl (car cl))
+                        (ncl (length cl)))
+                   (cons (if (= 1 ncl)
+                             ccl
+                             (list (length cl) ccl))
+                         (f (cdr ll)))))))
+    (f (partition-by #'identity l))))
+(encode-modified '(a a a a b c c a a d e e e e))
+;;=>
+'((4 A) B (2 C) (2 A) D (4 E))
+
+;; P12 (**) Decode a run-length encoded list.
+(defun repeat (n el) (make-list n :initial-element el))
+(defun decode-rle (l)
+  ;; FIXME: get (or write) thread-last macro...
+  (apply #'concatenate (cons 'list
+                             (mapcar #'(lambda (x)
+                                         (if (consp x)
+                                             (repeat (car x) (cadr x))
+                                             (list x)))
+                                     l))))
+
+(decode-rle '((4 A) B (2 C) (2 A) D (4 E)))
+
+;;=>
+'(A A A A B C C A A D E E E E)
