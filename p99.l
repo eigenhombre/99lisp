@@ -180,7 +180,7 @@
 (test= (decode-rle '((4 A) B (2 C) (2 A) D (4 E)))
        '(A A A A B C C A A D E E E E))
 
-;; (**) Run-length encoding of a list (direct solution).
+;; P13 (**) Run-length encoding of a list (direct solution).
 (defun addlast (el l)
   ;; FIXME: Slow?
   (append l (list el)))
@@ -211,3 +211,16 @@
 
 (test= (encode-direct '(a a a a b c c a a d e e e e))
        '((4 A) B (2 C) (2 A) D (4 E)))
+
+;; P14 (*) Duplicate the elements of a list.
+(defun juxt (&rest fs)
+  (lambda (x)
+    (mapcar #'(lambda (f) (funcall f x)) fs)))
+
+(test= (funcall (juxt #'car #'cdr) '(1 2 3))
+       '(1 (2 3)))
+
+(test= (apply #'append
+              (mapcar (juxt #'identity #'identity)
+                      '(a b c c d)))
+       '(A A B B C C C C D D))
