@@ -313,3 +313,51 @@
 
 (test= (remove-at '(a b c d) 2)
        '(A C D))
+
+
+;; P21 (*) Insert an element at a given position into a list.
+(defun insert-at (el l n)
+  (let ((n1 (- n 1)))
+    (append (take n1 l)
+            (list el)
+            (drop n1 l))))
+
+(test= (insert-at 'alfa '(a b c d) 2)
+       '(A ALFA B C D))
+
+
+;; P22 (*) Create a list containing all integers within a given range.
+(defun range (n1 n2)
+  ;; OK, so this isn't very Clojurish, but I can't resist trying out
+  ;; `loop`...
+  (loop for n from n1 to n2 collect n))
+
+(test= (range 4 9)
+       '(4 5 6 7 8 9))
+(test= (range 1 10)
+       '(1 2 3 4 5 6 7 8 9 10))
+
+
+;; P23 (**) Extract a given number of randomly selected elements from a list.
+(defun zero? (n) (= 0 n))
+(defun rnd-select (l n)
+  (cond
+    ((zero? n) nil)
+    ((not l) nil)
+    (t (let* ((nl (length l))
+              (rl (+ 1 (random 3)))
+              (el (element-at l rl))
+              (re (remove-at l rl)))
+         (cons el (rnd-select re (- n 1)))))))
+
+(rnd-select '(a b c d e f g h) 3)
+;;=>
+'(B C D)
+(rnd-select '(a b c d e f g h) 3)
+;;=>
+'(B A E)
+
+(test= (length (rnd-select '(a b c d e f g h) 3)) 3)
+(test= (length (rnd-select (range 1 10) 10)) 10)
+(test= (length (rnd-select (range 1 10) 0)) 0)
+(test= (length (rnd-select (range 1 1000) 1000)) 1000)
