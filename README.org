@@ -4,4 +4,8 @@ Reference list [[https://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcio
 
 See my Common Lisp setup =Makefile= [[https://github.com/eigenhombre/mac-sbcl-quicklisp-install][here]].
 
-Note that I'm a CL newbie, so please don't expect idiomatic code (yet).
+Note that I'm a CL newbie, so please don't expect idiomatic code
+(yet). Also I'm interested in seeing how easy/hard it is to use the
+Clojure sequence idioms I'm familiar with, porting them into CL as
+necessary (so far, it's easy, though I've ignored laziness and
+persistence).

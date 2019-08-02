@@ -269,3 +269,47 @@
 
 (test= (drop-nth '(a b c d e f g h i k) 3)
        '(A B D E G H K))
+
+
+;; P17 (*) Split a list into two parts; the length of the first part is given.
+;; (the 'do not use any predicates' thing is pointless)
+(defun split (l n) (list (take n l) (drop n l)))
+
+(test= (split '(a b c d e f g h i k) 3)
+       '((A B C) (D E F G H I K)))
+
+
+;; P18 (**) Extract a slice from a list.
+(defun slice (l start end)
+  (take (+ 1 (- end start)) (drop (- start 1) l)))
+(test= (slice '(1) 1 1)
+       '(1))
+(test= (slice '(1) 1 3)
+       '(1))
+(test= (slice '(a b c d e f g h i k) 3 7)
+       '(C D E F G))
+
+
+;; P19 (**) Rotate a list N places to the left.
+(defun pos? (n) (>= n 0))
+
+(defun rotate (l n)
+  (if (pos? n)
+      (append (drop n l) (take n l))
+      (let ((pivot (+ (length l) n)))
+        (append (drop pivot l) (take pivot l)))))
+
+(test= (rotate '(a b c d e f g h) 3)
+       '(D E F G H A B C))
+
+(test= (rotate '(a b c d e f g h) -2)
+       '(G H A B C D E F))
+
+
+;; P20 (*) Remove the K'th element from a list.
+(defun remove-at (l n)
+  (append (take (- n 1) l)
+          (drop n l)))
+
+(test= (remove-at '(a b c d) 2)
+       '(A C D))
