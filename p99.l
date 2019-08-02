@@ -5,9 +5,21 @@
   (assert (equal a b)))
 
 (defun take (n l)
+  (cond
+    ((not l) nil)
+    ((< n 1) ())
+    (t (cons (car l) (take (- n 1) (cdr l))))))
+
+(test= (take 2 '(a b c)) '(a b))
+(test= (take 4 '(a b c)) '(a b c))
+
+(defun drop (n l)
   (if (< n 1)
-      ()
-      (cons (car l) (take (- n 1) (cdr l)))))
+      l
+      (drop (- n 1) (cdr l))))
+
+(test= (drop 2 '(a b c)) '(c))
+
 
 ;; P01 (*) Find the last box of a list.
 (defun my-last (l)
@@ -212,15 +224,48 @@
 (test= (encode-direct '(a a a a b c c a a d e e e e))
        '((4 A) B (2 C) (2 A) D (4 E)))
 
+
 ;; P14 (*) Duplicate the elements of a list.
 (defun juxt (&rest fs)
   (lambda (x)
     (mapcar #'(lambda (f) (funcall f x)) fs)))
 
-(test= (funcall (juxt #'car #'cdr) '(1 2 3))
-       '(1 (2 3)))
-
 (test= (apply #'append
               (mapcar (juxt #'identity #'identity)
                       '(a b c c d)))
        '(A A B B C C C C D D))
+
+
+;; P15 (**) Replicate the elements of a list a given number of times.
+(defun repli (l n)
+  (apply #'append (mapcar #'(lambda (x)
+                              (repeat n x))
+                          l)))
+
+(test= (repli '(a b c) 3)
+       '(A A A B B B C C C))
+
+
+;; P16 (**) Drop every N'th element from a list.
+(defun partition-all (n l)
+  ;; FIXME: do 3-ary version: (partition n l ofs)
+  (labels ((f (ll ret)
+             (if (not ll)
+                 ret
+                 (f (drop n ll)
+                    (append ret (list (take n ll)))))))
+    (f l nil)))
+
+(test= (partition-all 3 '(a b c d e f g h i k))
+       '((A B C) (D E F) (G H I) (K)))
+
+(defun drop-nth (l n)
+  (apply #'append
+         (mapcar #'(lambda (x)
+                     (if (= (length x) n)
+                         (butlast x)
+                         x))
+                 (partition-all n l))))
+
+(test= (drop-nth '(a b c d e f g h i k) 3)
+       '(A B D E G H K))
