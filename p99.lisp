@@ -10,6 +10,10 @@
     ((< n 1) ())
     (t (cons (car l) (take (- n 1) (cdr l))))))
 
+;; Alternatively:
+(defun take-using-loop (n l)
+  (loop repeat n for x in l collect x))
+
 (test= (take 2 '(a b c)) '(a b))
 (test= (take 4 '(a b c)) '(a b c))
 
@@ -23,7 +27,7 @@
 
 ;; P01 (*) Find the last box of a list.
 (defun my-last (l)
-  (take 1 (reverse l)))
+  (last l))
 
 (test= (my-last '(a b c d))
        '(D))
@@ -31,7 +35,8 @@
 
 ;; P02 (*) Find the last but one box of a list.
 (defun my-but-last (l)
-  (reverse (take 2 (reverse l))))
+  (let ((n (length l)))
+    (drop (- n 2) l)))
 
 (test= (my-but-last '(a b c d))
        '(C D))
@@ -144,6 +149,7 @@
 
 (test= (pack '(a a a a b c c a a d e e e e))
        '((A A A A) (B) (C C) (A A) (D) (E E E E)))
+
 
 ;; P10 (*) Run-length encoding of a list.
 (defun encode (l)
