@@ -345,7 +345,7 @@
     ((zero? n) nil)
     ((not l) nil)
     (t (let* ((nl (length l))
-              (rl (+ 1 (random 3)))
+              (rl (+ 1 (random nl)))
               (el (element-at l rl))
               (re (remove-at l rl)))
          (cons el (rnd-select re (- n 1)))))))
@@ -357,7 +357,34 @@
 ;;=>
 '(B A E)
 
+(defun filter (f l)
+  (if (not l)
+      nil
+      (let ((cl (car l)))
+        (if (funcall f cl)
+            (cons cl (filter f (cdr l)))
+            (filter f (cdr l))))))
+
 (test= (length (rnd-select '(a b c d e f g h) 3)) 3)
 (test= (length (rnd-select (range 1 10) 10)) 10)
 (test= (length (rnd-select (range 1 10) 0)) 0)
 (test= (length (rnd-select (range 1 1000) 1000)) 1000)
+;; Make sure no nils get in...
+(test= () (filter #'null (rnd-select (range 1 1000) 1000)))
+
+;; P24 (*) Lotto: Draw N different random numbers from the set 1..M.
+(defun lotto-select (n m)
+  (loop repeat n collect (+ 1 (random m))))
+
+(test= (length (lotto-select 6 49)) 6)
+
+
+;; P25 (*) Generate a random permutation of the elements of a list.
+(defun rnd-permu (l)
+  (rnd-select l (length l)))
+
+(rnd-permu '(a b c d e f))
+;;=>
+'(B E A C D F)
+
+(test= (length (rnd-permu '(a b c d e f))) 6)
