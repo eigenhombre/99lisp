@@ -333,13 +333,20 @@
 
 
 ;; P22 (*) Create a list containing all integers within a given range.
-(defun range (n1 n2)
+(defun dec (n) (- n 1))
+(defun inc (n) (+ n 1))
+
+(defun range (n1 &optional n2)
   ;; OK, so this isn't very Clojurish, but I can't resist trying out
   ;; `loop`...
-  (loop for n from n1 to n2 collect n))
+  (if n2
+      (loop for n from n1 to n2 collect n)
+      (loop for n from 0 to (dec n1) collect n)))
 
 (test= (range 4 9)
        '(4 5 6 7 8 9))
+(test= (range 4)
+       '(0 1 2 3))
 (test= (range 1 10)
        '(1 2 3 4 5 6 7 8 9 10))
 
@@ -372,11 +379,11 @@
             (filter f (cdr l))))))
 
 (test= (length (rnd-select '(a b c d e f g h) 3)) 3)
-(test= (length (rnd-select (range 1 10) 10)) 10)
-(test= (length (rnd-select (range 1 10) 0)) 0)
-(test= (length (rnd-select (range 1 1000) 1000)) 1000)
+(test= (length (rnd-select (range 10) 10)) 10)
+(test= (length (rnd-select (range 10) 0)) 0)
+(test= (length (rnd-select (range 1000) 1000)) 1000)
 ;; Make sure no nils get in...
-(test= () (filter #'null (rnd-select (range 1 1000) 1000)))
+(test= () (filter #'null (rnd-select (range 1000) 1000)))
 
 ;; P24 (*) Lotto: Draw N different random numbers from the set 1..M.
 (defun lotto-select (n m)
@@ -394,3 +401,67 @@
 '(B E A C D F)
 
 (test= (length (rnd-permu '(a b c d e f))) 6)
+
+
+;; P26 (**) Generate the combinations of K distinct objects chosen
+;; from the N elements of a list
+
+;; This one was hard for me and I'm sure there's a more elegant way to
+;; do it.  Tests, including for helper functions, at end....
+
+(defun prepare (l)
+  (list (list () l)))
+
+(defun lists-equal-as-sets (list1 list2)
+  "
+  Adapted from https://stackoverflow.com/questions/15760966/ \\
+  lisp-how-can-i-test-if-two-lists-have-the-same-elements
+  "
+  (and (eq (null (intersection list1 list2)) nil)
+       (null (set-difference list1 list2))
+       (null (set-difference list2 list1))))
+
+(defun take-single-item (p)
+  (apply #'append
+         (loop for (els remain) in p collect
+              (loop for r in remain
+                 collect
+                   `(,(cons r els) ,(remove r remain))))))
+
+(defun remove-el-permutations-from-l (el l)
+  (loop for el2 in l
+       if (not (lists-equal-as-sets el2 el))
+     collect el2))
+
+(defun remove-permutations (l)
+  (labels ((f (ll acc)
+             (if (not ll)
+                 acc
+                 (f (cdr ll)
+                    (cons (car ll)
+                          (remove-el-permutations-from-l (car ll)
+                                                         acc))))))
+    (f l nil)))
+
+(defun combos (n l)
+  (labels ((f (ll)
+             (let ((cur-n (length (caar ll))))
+               (if (= (length (caar ll)) n)
+                   ll
+                   (f (take-single-item ll))))))
+    (remove-permutations (mapcar #'car (f (prepare l))))))
+
+(test= (lists-equal-as-sets '(1 2 3) '(2 1 3)) t)
+(test= (lists-equal-as-sets '(1 2 3) '(2 3 3)) nil)
+
+(test= (remove-el-permutations-from-l '(1 2 3) '((1 2 3) (3 2 1) (2 3 3)))
+       '((2 3 3)))
+
+(test= (remove-permutations '((1 0) (2 0) (3 0) (0 1)))
+       '((0 1) (3 0) (2 0)))
+
+(loop for i from 1 to 5 do
+     (test= (combos i (range i)) (list (range i))))
+
+(test= 4 (length (combos 3 (range 4))))
+(test= 15 (length (combos 4 '(a b c d e f))))
