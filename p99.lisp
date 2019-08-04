@@ -412,7 +412,7 @@
 (defun prepare (l)
   (list (list () l)))
 
-(defun lists-equal-as-sets (list1 list2)
+(defun sets-equal (list1 list2)
   "
   Adapted from https://stackoverflow.com/questions/15760966/ \\
   lisp-how-can-i-test-if-two-lists-have-the-same-elements
@@ -428,19 +428,23 @@
                  collect
                    `(,(cons r els) ,(remove r remain))))))
 
-(defun remove-el-permutations-from-l (el l)
+(defun remove-item-permutations (el l)
   (loop for el2 in l
-       if (not (lists-equal-as-sets el2 el))
+     if (not (sets-equal el2 el))
      collect el2))
 
-(defun remove-permutations (l)
+(defun remove-dups (l)
+  "
+  Remove items duplicated, even as permutations.
+  E.g., ((1 2) (2 3) (2 1)) => ((1 2) (2 3))
+  "
   (labels ((f (ll acc)
              (if (not ll)
                  acc
                  (f (cdr ll)
                     (cons (car ll)
-                          (remove-el-permutations-from-l (car ll)
-                                                         acc))))))
+                          (remove-item-permutations (car ll)
+                                                    acc))))))
     (f l nil)))
 
 (defun combos (n l)
@@ -449,15 +453,15 @@
                (if (= (length (caar ll)) n)
                    ll
                    (f (take-single-item ll))))))
-    (remove-permutations (mapcar #'car (f (prepare l))))))
+    (remove-dups (mapcar #'car (f (prepare l))))))
 
-(test= (lists-equal-as-sets '(1 2 3) '(2 1 3)) t)
-(test= (lists-equal-as-sets '(1 2 3) '(2 3 3)) nil)
+(test= (sets-equal '(1 2 3) '(2 1 3)) t)
+(test= (sets-equal '(1 2 3) '(2 3 3)) nil)
 
-(test= (remove-el-permutations-from-l '(1 2 3) '((1 2 3) (3 2 1) (2 3 3)))
+(test= (remove-item-permutations '(1 2 3) '((1 2 3) (3 2 1) (2 3 3)))
        '((2 3 3)))
 
-(test= (remove-permutations '((1 0) (2 0) (3 0) (0 1)))
+(test= (remove-dups '((1 0) (2 0) (3 0) (0 1)))
        '((0 1) (3 0) (2 0)))
 
 (loop for i from 1 to 5 do
