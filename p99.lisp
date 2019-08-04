@@ -449,10 +449,9 @@
 
 (defun combos (n l)
   (labels ((f (ll)
-             (let ((cur-n (length (caar ll))))
-               (if (= (length (caar ll)) n)
-                   ll
-                   (f (take-single-item ll))))))
+             (if (= (length (caar ll)) n)
+                 ll
+                 (f (take-single-item ll)))))
     (remove-dups (mapcar #'car (f (prepare l))))))
 
 (test= (sets-equal '(1 2 3) '(2 1 3)) t)
@@ -464,7 +463,7 @@
 (test= (remove-dups '((1 0) (2 0) (3 0) (0 1)))
        '((0 1) (3 0) (2 0)))
 
-(loop for i from 1 to 5 do
+(loop for i from 1 to 7 do
      (test= (combos i (range i)) (list (range i))))
 
 (test= 4 (length (combos 3 (range 4))))
