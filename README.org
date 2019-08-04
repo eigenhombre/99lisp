@@ -1,7 +1,9 @@
 Ninety-nine Lisp problems (in progress), based on [[https://sites.google.com/site/prologsite/prolog-problems][99 Prolog problems]].
 
-Reference list for the problem statements using (mostly) Lisp syntax
-is [[https://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html][here]].  Also see my Common Lisp setup =Makefile= [[https://github.com/eigenhombre/mac-sbcl-quicklisp-install][here]].
+The first few dozen of these are here; more as I find time and
+inclination.  Reference list for the problem statements using (mostly)
+Lisp syntax is [[https://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html][here]].  I'm working with =sbcl= on OS X... if that's of
+interest, see my Common Lisp setup =Makefile= [[https://github.com/eigenhombre/mac-sbcl-quicklisp-install][here]].
 
 Note that I'm a CL newbie, so please don't expect idiomatic code
 (yet). Also I'm interested in seeing how easy/hard it is to use the
